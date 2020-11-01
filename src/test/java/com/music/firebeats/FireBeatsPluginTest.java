@@ -1,13 +1,13 @@
-package com.example;
+package com.music.firebeats;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class FireBeatsPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(FireBeatsPlugin.class);
 		RuneLite.main(args);
 	}
 }
