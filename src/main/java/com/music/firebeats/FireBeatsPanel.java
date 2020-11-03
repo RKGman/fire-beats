@@ -1,6 +1,8 @@
 package com.music.firebeats;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 import javax.inject.Provider;
@@ -8,6 +10,8 @@ import javax.smartcardio.Card;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -21,7 +25,7 @@ import net.runelite.client.util.Text;
 
 @Slf4j
 public
-class FireBeatsPanel extends PluginPanel
+class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListener
 {
     private final JPanel configPanel = new JPanel();
 
@@ -61,6 +65,8 @@ class FireBeatsPanel extends PluginPanel
         JSlider volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
                 fireBeatsPlugin.getMusicConfig().volume());
         volumeSlider.setBackground(Color.LIGHT_GRAY);
+        volumeSlider.setName("volume");
+        volumeSlider.addChangeListener((ChangeListener) this);
         volumePanel.add(volumeLabel);
         volumePanel.add(volumeSlider);
 
@@ -71,6 +77,8 @@ class FireBeatsPanel extends PluginPanel
         JSlider remixOffsetSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
                 fireBeatsPlugin.getMusicConfig().remixVolumeOffset());
         remixOffsetSlider.setBackground(Color.LIGHT_GRAY);
+        remixOffsetSlider.setName("remixOffset");
+        remixOffsetSlider.addChangeListener((ChangeListener) this);
         volumePanel.add(remixOffsetLabel);
         volumePanel.add(remixOffsetSlider);
 
@@ -85,6 +93,8 @@ class FireBeatsPanel extends PluginPanel
         JCheckBox muteCheckBox = new JCheckBox();
         muteCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().mute());
         muteCheckBox.setForeground(Color.WHITE);
+        muteCheckBox.setName("mute");
+        muteCheckBox.addActionListener((ActionListener) this);
         togglePanel.add(new JSeparator());
         togglePanel.add(muteLabel);
         togglePanel.add(muteCheckBox);
@@ -97,6 +107,8 @@ class FireBeatsPanel extends PluginPanel
         JCheckBox showTrackCheckBox = new JCheckBox();
         showTrackCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().showCurrentTrackName());
         showTrackCheckBox.setForeground(Color.WHITE);
+        showTrackCheckBox.setName("showTrackName");
+        showTrackCheckBox.addActionListener((ActionListener) this);
         togglePanel.add(showTrackLabel);
         togglePanel.add(showTrackCheckBox);
         togglePanel.add(new JSeparator());
@@ -108,13 +120,59 @@ class FireBeatsPanel extends PluginPanel
         JCheckBox playOriginalCheckBox = new JCheckBox();
         playOriginalCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().playOriginalIfNoRemix());
         playOriginalCheckBox.setForeground(Color.WHITE);
+        playOriginalCheckBox.setName("playOriginal");
+        playOriginalCheckBox.addActionListener((ActionListener) this);
         togglePanel.add(playOriginalLabel);
         togglePanel.add(playOriginalCheckBox);
         togglePanel.add(new JSeparator());
 
-
         volumePanel.add(togglePanel);
 
         add(volumePanel, BorderLayout.CENTER);
+    }
+
+    public void stateChanged(ChangeEvent e)
+    {
+        JSlider source = (JSlider)e.getSource();
+        if (!source.getValueIsAdjusting()) {
+            if (source.getName() == "volume")
+            {
+                log.info("Volume is " + source.getValue());
+                if (source.getValue() < fireBeatsPlugin.getMusicConfig().remixVolumeOffset())
+                {
+                    fireBeatsPlugin.getMusicConfig().setVolume(fireBeatsPlugin.getMusicConfig().remixVolumeOffset());
+                }
+                else
+                {
+                    fireBeatsPlugin.getMusicConfig().setVolume(source.getValue());
+                }
+            }
+            else if (source.getName() == "remixOffset")
+            {
+                log.info("Remix offset is " + source.getValue());
+                fireBeatsPlugin.getMusicConfig().setRemixVolumeOffset(source.getValue());
+            }
+
+        }
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        JCheckBox source = (JCheckBox)e.getSource();
+        if (source.getName() == "mute")
+        {
+            log.info("Value of mute is " + source.isSelected());
+            fireBeatsPlugin.getMusicConfig().setMute(source.isSelected());
+        }
+        else if (source.getName() == "showTrackName")
+        {
+            log.info("Value of showTrackName is " + source.isSelected());
+            fireBeatsPlugin.getMusicConfig().setShowCurrentTrackName(source.isSelected());
+        }
+        else if (source.getName() == "playOriginal")
+        {
+            log.info("Value of playOriginal is " + source.isSelected());
+            fireBeatsPlugin.getMusicConfig().setPlayOriginalIfNoRemix(source.isSelected());
+        }
     }
 }
