@@ -145,6 +145,7 @@ public class FireBeatsPlugin extends Plugin
 	{
 		if (trackPlayer.getVolume() == 0)
 		{
+			client.setMusicVolume(0);
 			previousTrack = nextTrack;
 			currentPlayerState = PLAYING_TRACK_STATE;
 		}
