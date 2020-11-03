@@ -18,8 +18,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.music.MusicConfig;
-import net.runelite.client.plugins.music.MusicPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import java.util.*;
@@ -27,8 +25,6 @@ import java.io.*;
 import java.net.URL;
 
 import jaco.mp3.player.MP3Player;
-import org.graalvm.compiler.phases.graph.ScheduledNodeIterator;
-
 
 
 @Slf4j
@@ -51,13 +47,27 @@ public class FireBeatsPlugin extends Plugin
 	@Inject
 	private FireBeatsOverlay overlay;
 
+	private final int FADING_TRACK_STATE = 0;
+
+	private final int PLAYING_TRACK_STATE = 1;
+
+	private int currentPlayerState = PLAYING_TRACK_STATE;
+
 	private Widget currentTrackBox;
 
-	private String previousSong = "";
+	private String previousTrack = "";
+
+	private String nextTrack = "";
 
 	private MP3Player trackPlayer = new MP3Player();
 
 	private Map<String, Track> mp3Map = new HashMap<String, Track>();
+
+	private boolean remixAvailable = false;
+
+	private boolean changingTracks = false;
+
+	private boolean initializeTrack = true;
 
 	private void buildMp3TrackMap()
 	{
@@ -104,11 +114,35 @@ public class FireBeatsPlugin extends Plugin
 		}
 	}
 
+	private void fadeCurrentTrack()
+	{
+		if (trackPlayer.getVolume() == 0)
+		{
+			previousTrack = nextTrack;
+			currentPlayerState = PLAYING_TRACK_STATE;
+		}
+		else
+		{
+			trackPlayer.setVolume(trackPlayer.getVolume() - 7);
+
+			if (trackPlayer.getVolume() < 7)
+			{
+				trackPlayer.setVolume(0);
+				trackPlayer.stop();
+				previousTrack = nextTrack;
+				currentPlayerState = PLAYING_TRACK_STATE;
+			}
+		}
+
+	}
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		// Build map of mp3 track links
 		buildMp3TrackMap();
+
+		// TODO: Mute all client music
 
 		overlayManager.add(overlay);
 
@@ -129,6 +163,34 @@ public class FireBeatsPlugin extends Plugin
 //			client.addChatMessage(ChatMessageType.GAMEMESSAGE,
 //					"", "Fire Beats says AYYYY", null);
 		}
+		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			// TODO: Mute event for normal track.
+			try
+			{
+				// Stop current track
+				trackPlayer.stop();
+				trackPlayer.getPlayList().clear();
+				// Start playing new track
+				Track track = mp3Map.get("Scape Main");
+				if (track.link != null)
+				{
+					remixAvailable = true;
+					trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
+					trackPlayer.addToPlayList(new URL(track.link));
+					trackPlayer.play();
+				}
+				else
+				{
+					remixAvailable = false;
+					//  TODO: Handle playing normal song, or not
+				}
+			}
+			catch (Exception e)
+			{
+				log.error(e.getMessage());
+			}
+		}
 	}
 
 	@Subscribe
@@ -148,37 +210,94 @@ public class FireBeatsPlugin extends Plugin
 				MusicWidgetInfo.MUSIC_CURRENT_TRACK.getGroupId(),
 				MusicWidgetInfo.MUSIC_CURRENT_TRACK.getChildId());
 
-		if (previousSong != currentTrack.getText())
+		if (previousTrack != currentTrack.getText())
 		{
-			try
-			{
-				previousSong = currentTrack.getText();
-				// Stop current track
-				trackPlayer.stop();
-				trackPlayer = new MP3Player();
-				// Start playing new track
-				Track track = mp3Map.get(currentTrack.getText());
-				if (track.link != null)
-				{
-					trackPlayer.addToPlayList(new URL(track.link));
-					trackPlayer.play();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-					"", "Fire Beats Notice: " + track.name + " remix produced by " + track.credit,
-							null);
-				}
-				else
-				{
-					//  TODO: Handle playing normal song, or not
-				}
-			}
-			catch (Exception e)
-			{
-				log.error(e.getMessage());
-			}
-
+			changingTracks = true;
+			nextTrack = currentTrack.getText();
+			currentPlayerState = FADING_TRACK_STATE;
+			initializeTrack = true;
+		}
+		else
+		{
+			changingTracks = false;
 		}
 
-		// System.out.println("The current track is " + currentTrack.getText());
+		try
+		{
+			if (changingTracks == true && currentPlayerState == FADING_TRACK_STATE)
+			{
+				fadeCurrentTrack();
+			}
+			else
+			{
+				if (initializeTrack == true)
+				{
+					trackPlayer.getPlayList().clear();
+					// Start playing new track
+					Track track = mp3Map.get(nextTrack);
+					if (track.link != null)
+					{
+						remixAvailable = true;
+						client.setMusicVolume(0);
+						trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
+						trackPlayer.addToPlayList(new URL(track.link));
+						trackPlayer.play();
+						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+								"",
+								"Fire Beats Notice: " + track.name + " remix produced by " + track.credit,
+								null);
+						//currentTrackBox.setText(currentTrack.getText());
+						initializeTrack = false;
+					}
+					else
+					{
+						remixAvailable = false;
+						if (config.playOriginalIfNoRemix() == true)
+						{
+							client.setMusicVolume(config.volume());
+							//currentTrackBox.setText(currentTrack.getText());
+							initializeTrack = false;
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+		//}
+
+		if (config.mute() == true)
+		{
+			trackPlayer.setVolume(0);
+			client.setMusicVolume(0);
+		}
+		else
+		{
+			if (remixAvailable == true)
+			{ 	// If not in a fading state...
+				if (currentPlayerState == PLAYING_TRACK_STATE)
+				{
+					if (trackPlayer.getVolume() < (config.volume() - config.remixVolumeOffset()))
+					{
+						trackPlayer.setVolume(trackPlayer.getVolume() + 4);
+					}
+					else if (trackPlayer.getVolume() > (config.volume() - config.remixVolumeOffset()))
+					{
+						trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
+					}
+
+					client.setMusicVolume(0);
+				}
+			}
+			else
+			{
+				trackPlayer.setVolume(0);
+				client.setMusicVolume(config.volume());
+			}
+		}
+
 		currentTrackBox.setText(currentTrack.getText());
 	}
 

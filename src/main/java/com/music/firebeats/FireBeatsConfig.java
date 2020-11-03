@@ -3,72 +3,68 @@ package com.music.firebeats;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("firebeats")
 public interface FireBeatsConfig extends Config
 {
 	@ConfigItem(
-			keyName = "muteOwnAreaSounds",
-			name = "Mute player area sounds",
-			description = "Mute area sounds caused by yourself",
+			keyName = "mute",
+			name = "Mute",
+			description = "Mutes everything.",
 			position = 0
 	)
-	default boolean muteOwnAreaSounds()
+	default boolean mute()
 	{
 		return false;
 	}
 
+	@Range(
+			max = 100
+	)
 	@ConfigItem(
-			keyName = "muteOtherAreaSounds",
-			name = "Mute other players' area sounds",
-			description = "Mute area sounds caused by other players",
+			keyName = "volume",
+			name = "Volume",
+			description = "Specify the volume.",
 			position = 1
 	)
-	default boolean muteOtherAreaSounds()
+	default int volume()
 	{
-		return false;
+		return 100;
 	}
 
 	@ConfigItem(
-			keyName = "muteOtherAreaNPCSounds",
-			name = "Mute NPCs' area sounds",
-			description = "Mute area sounds caused by NPCs",
+			keyName = "playOriginalIfNoRemix",
+			name = "Play original track if no remix",
+			description = "Play the original track if the remix link is broken or does not exist.",
 			position = 2
 	)
-	default boolean muteNpcAreaSounds()
+	default boolean playOriginalIfNoRemix()
 	{
-		return false;
-	}
-
-	@ConfigItem(
-			keyName = "muteOtherAreaEnvironmentSounds",
-			name = "Mute environment area sounds",
-			description = "Mute area sounds caused by neither NPCs nor players",
-			position = 3
-	)
-	default boolean muteEnvironmentAreaSounds()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-			keyName = "mutePrayerSounds",
-			name = "Mute prayer sounds",
-			description = "Mute prayer activation and deactivation sounds",
-			position = 4
-	)
-	default boolean mutePrayerSounds()
-	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
 			keyName = "showCurrentTrackName",
 			name = "Show the current track name",
 			description = "Displays the current track name without having to open the music tab.",
-			position = 5
+			position = 3
 	)
-	default boolean showCurrentTrackName() { return false; }
+	default boolean showCurrentTrackName() { return true; }
+
+	@Range(
+			max = 100
+	)
+	@ConfigItem(
+			keyName = "remixVolumeOffset",
+			name = "Remix volume offset",
+			description = "Amount to decrease volume of remix to match in-game volume.",
+			position = 4
+	)
+	default int remixVolumeOffset()
+	{
+		return 45;
+	}
 
 	@ConfigItem(
 			keyName = "musicVolume",
