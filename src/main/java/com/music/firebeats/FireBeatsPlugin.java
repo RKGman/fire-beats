@@ -310,14 +310,17 @@ public class FireBeatsPlugin extends Plugin
 			{ 	// If not in a fading state...
 				if (currentPlayerState == PLAYING_TRACK_STATE)
 				{
+					// TODO: Make this not trash.
 					if (trackPlayer.getVolume() < (config.volume() - config.remixVolumeOffset()))
 					{
-						trackPlayer.setVolume(trackPlayer.getVolume() + 4);
+						trackPlayer.setVolume(trackPlayer.getVolume() + 7);
 					}
 					else if (trackPlayer.getVolume() > (config.volume() - config.remixVolumeOffset()))
 					{
 						trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
 					}
+
+					//trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
 
 					client.setMusicVolume(0);
 				}

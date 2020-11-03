@@ -19,6 +19,14 @@ public interface FireBeatsConfig extends Config
 		return false;
 	}
 
+	@ConfigItem(
+			keyName = "mute",
+			name = "Mute",
+			description = "Mutes everything.",
+			hidden = true
+	)
+	void setMute(boolean value);
+
 	@Range(
 			max = 100
 	)
@@ -34,6 +42,14 @@ public interface FireBeatsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "volume",
+			name = "Volume",
+			description = "",
+			hidden = true
+	)
+	void setVolume(int val);
+
+	@ConfigItem(
 			keyName = "playOriginalIfNoRemix",
 			name = "Play original track if no remix",
 			description = "Play the original track if the remix link is broken or does not exist.",
@@ -45,12 +61,28 @@ public interface FireBeatsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "playOriginalIfNoRemix",
+			name = "Play original track if no remix",
+			description = "Play the original track if the remix link is broken or does not exist.",
+			hidden = true
+	)
+	void setPlayOriginalIfNoRemix(boolean value);
+
+	@ConfigItem(
 			keyName = "showCurrentTrackName",
 			name = "Show the current track name",
 			description = "Displays the current track name without having to open the music tab.",
 			position = 3
 	)
 	default boolean showCurrentTrackName() { return true; }
+
+	@ConfigItem(
+			keyName = "showCurrentTrackName",
+			name = "Show the current track name",
+			description = "Displays the current track name without having to open the music tab.",
+			hidden = true
+	)
+	void setShowCurrentTrackName(boolean value);
 
 	@Range(
 			max = 100
@@ -65,6 +97,14 @@ public interface FireBeatsConfig extends Config
 	{
 		return 45;
 	}
+
+	@ConfigItem(
+			keyName = "remixVolumeOffset",
+			name = "Remix volume offset",
+			description = "",
+			hidden = true
+	)
+	void setRemixVolumeOffset(int val);
 
 	@ConfigItem(
 			keyName = "musicVolume",
