@@ -15,6 +15,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetType;
+import net.runelite.client.RuneLite;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -24,6 +25,9 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import java.awt.image.BufferedImage;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.io.*;
 import java.net.URL;
@@ -85,10 +89,21 @@ public class FireBeatsPlugin extends Plugin
 	{
 		try
 		{
+			// Check if track listing CSV exists.
+			File trackFile = new File(RuneLite.RUNELITE_DIR, "Osrs-Track-Remix-List.csv");
+			URL trackResource = getClass().getClassLoader().getResource("Osrs-Track-Remix-List.csv");
+			if(trackFile.exists() == false) {
+				// Copy default track list from resources.
+				Files.copy(
+						new File(trackResource.getPath()).toPath(),
+						trackFile.toPath(),
+						StandardCopyOption.REPLACE_EXISTING);
+			}
+
 			String line = "";
 			String delimiter = ",";
 
-			BufferedReader br = new BufferedReader(new FileReader("libs/Osrs-Track-Remix-List.csv"));
+			BufferedReader br = new BufferedReader(new FileReader(trackFile.toPath().toString()));
 			while ((line = br.readLine()) != null)   //returns a Boolean value
 			{
 				String[] track = line.split(delimiter);    // use comma as separator
@@ -167,8 +182,6 @@ public class FireBeatsPlugin extends Plugin
 		// Build map of mp3 track links
 		buildMp3TrackMap();
 
-		// TODO: Mute all client music
-
 		overlayManager.add(overlay);
 
 		log.info("Fire Beats started!");
@@ -185,8 +198,7 @@ public class FireBeatsPlugin extends Plugin
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
 		{
-//			client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-//					"", "Fire Beats says AYYYY", null);
+			config.setMusicVolume(0);
 		}
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
 		{
@@ -327,8 +339,16 @@ public class FireBeatsPlugin extends Plugin
 			}
 			else
 			{
-				trackPlayer.setVolume(0);
-				client.setMusicVolume(config.volume());
+				if (config.playOriginalIfNoRemix() == true)
+				{
+					trackPlayer.setVolume(0);
+					client.setMusicVolume(config.volume());
+				}
+				else
+				{
+					trackPlayer.setVolume(0);
+					client.setMusicVolume(0);
+				}
 			}
 		}
 
