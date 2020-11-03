@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
@@ -18,13 +19,17 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
 import java.net.URL;
 
 import jaco.mp3.player.MP3Player;
+import net.runelite.client.util.ImageUtil;
 
 
 @Slf4j
@@ -37,6 +42,9 @@ public class FireBeatsPlugin extends Plugin
 {
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientToolbar clientToolbar;
 
 	@Inject
 	private FireBeatsConfig config;
@@ -52,6 +60,10 @@ public class FireBeatsPlugin extends Plugin
 	private final int PLAYING_TRACK_STATE = 1;
 
 	private int currentPlayerState = PLAYING_TRACK_STATE;
+
+	private NavigationButton navButton;
+
+	private FireBeatsPanel panel;
 
 	private Widget currentTrackBox;
 
@@ -139,6 +151,19 @@ public class FireBeatsPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "/fire_beats_icon.png");
+
+		panel = new FireBeatsPanel(this);
+
+		navButton = NavigationButton.builder()
+				.tooltip("Fire Beats")
+				.icon(icon)
+				.priority(50)
+				.panel(panel)
+				.build();
+
+		clientToolbar.addNavigation(navButton);
+
 		// Build map of mp3 track links
 		buildMp3TrackMap();
 
@@ -165,9 +190,9 @@ public class FireBeatsPlugin extends Plugin
 		}
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
 		{
-			// TODO: Mute event for normal track.
 			try
 			{
+				client.setMusicVolume(0); // Attempt to force mute.
 				// Stop current track
 				trackPlayer.stop();
 				trackPlayer.getPlayList().clear();
@@ -200,6 +225,15 @@ public class FireBeatsPlugin extends Plugin
 		{
 			Widget viewport = client.getWidget(WidgetInfo.RESIZABLE_VIEWPORT_OLD_SCHOOL_BOX);
 			currentTrackBox = viewport.createChild(-1, WidgetType.TEXT);
+		}
+	}
+
+	@Subscribe
+	public void onClientTick(ClientTick clientTick)
+	{
+		if (client.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			log.info("HELLO!!!");
 		}
 	}
 
@@ -246,7 +280,6 @@ public class FireBeatsPlugin extends Plugin
 								"",
 								"Fire Beats Notice: " + track.name + " remix produced by " + track.credit,
 								null);
-						//currentTrackBox.setText(currentTrack.getText());
 						initializeTrack = false;
 					}
 					else
@@ -255,7 +288,6 @@ public class FireBeatsPlugin extends Plugin
 						if (config.playOriginalIfNoRemix() == true)
 						{
 							client.setMusicVolume(config.volume());
-							//currentTrackBox.setText(currentTrack.getText());
 							initializeTrack = false;
 						}
 					}
@@ -266,7 +298,6 @@ public class FireBeatsPlugin extends Plugin
 		{
 			log.error(e.getMessage());
 		}
-		//}
 
 		if (config.mute() == true)
 		{
@@ -298,7 +329,10 @@ public class FireBeatsPlugin extends Plugin
 			}
 		}
 
-		currentTrackBox.setText(currentTrack.getText());
+		if (currentTrackBox != null)
+		{
+			currentTrackBox.setText(currentTrack.getText());
+		}
 	}
 
 	@Provides
