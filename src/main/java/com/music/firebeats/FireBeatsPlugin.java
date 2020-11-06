@@ -85,7 +85,10 @@ public class FireBeatsPlugin extends Plugin
 	@Inject
 	private FireBeatsOverlay overlay;
 
-	private final String TRACK_LIST_REPO =
+	private final static Map<String, String> DOMAIN_WHITELIST_MAP =
+			createDomainWhitelistMap("Domain-Whitelist.csv");
+
+	private final static String TRACK_LIST_REPO =
 			"https://raw.githubusercontent.com/RKGman/fire-beats/master/src/main/resources/Osrs-Track-Remix-List.csv";
 
 	private final int FADING_TRACK_STATE = 0;
@@ -113,6 +116,62 @@ public class FireBeatsPlugin extends Plugin
 	private boolean changingTracks = false;
 
 	private boolean initializeTrack = true;
+
+	private static Map createDomainWhitelistMap(String whitelistResource)
+	{
+		Map<String, String> whitelist = new HashMap<String, String>();
+
+		try
+		{
+			File whitelistFile =
+					new File(FireBeatsPlugin.class.getClassLoader().getResource(whitelistResource).getPath());
+
+			BufferedReader br = new BufferedReader(new FileReader(whitelistFile.toPath().toString()));
+
+			String line = "";
+			String delimiter = ",";
+			boolean isHeader = true;
+
+			while ((line = br.readLine()) != null)
+			{
+				if (isHeader == true)
+				{
+					isHeader = false;
+					continue; // Ignore header
+				}
+
+				String[] domain = line.split(delimiter);
+				whitelist.put(domain[0], domain[1]); // domain, name
+			}
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+
+		return whitelist;
+	}
+
+	private boolean checkWhitelist(String url)
+	{
+		boolean rv = false;
+
+		try
+		{
+			String domain = url.split("/")[2];
+
+			if (DOMAIN_WHITELIST_MAP.containsKey(domain) == true)
+			{
+				rv = true;
+			}
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+
+		return rv;
+	}
 
 	private void buildMp3TrackMap()
 	{
@@ -179,15 +238,19 @@ public class FireBeatsPlugin extends Plugin
 
 		try
 		{
-			Document doc = Jsoup.connect(anonFilesLink).get();
+			// Only if in whitelist
+			if (checkWhitelist(anonFilesLink) == true)
+			{
+				Document doc = Jsoup.connect(anonFilesLink).get();
 
-			Element downloadUrl = doc.getElementById("download-url");
+				Element downloadUrl = doc.getElementById("download-url");
 
-			link = downloadUrl.attr("href");
+				link = downloadUrl.attr("href");
 
-			link = link.replace(" ", "%20");
+				link = link.replace(" ", "%20");
 
-			log.info("Link: " + link);
+				log.info("Link: " + link);
+			}
 		}
 		catch (Exception e)
 		{
@@ -226,27 +289,31 @@ public class FireBeatsPlugin extends Plugin
 
 		try
 		{
-			URL url = new URL(TRACK_LIST_REPO);
+			// Only if in whitelist
+			if (checkWhitelist(TRACK_LIST_REPO) == true)
+			{
+				URL url = new URL(TRACK_LIST_REPO);
 
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-			connection.setRequestMethod("GET");
+				connection.setRequestMethod("GET");
 
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(connection.getInputStream()));
+				BufferedReader in = new BufferedReader(
+						new InputStreamReader(connection.getInputStream()));
 
-			String inputLine;
-			StringBuffer content = new StringBuffer();
+				String inputLine;
+				StringBuffer content = new StringBuffer();
 
-			while ((inputLine = in.readLine()) != null) {
-				content.append(inputLine + "\n");
+				while ((inputLine = in.readLine()) != null) {
+					content.append(inputLine + "\n");
+				}
+
+				in.close();
+
+				rv = content.toString();
+
+				connection.disconnect();
 			}
-
-			in.close();
-
-			rv = content.toString();
-
-			connection.disconnect();
 		}
 		catch (Exception e)
 		{
