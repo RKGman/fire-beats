@@ -34,6 +34,9 @@ import java.net.URL;
 import jaco.mp3.player.MP3Player;
 import net.runelite.client.util.ImageUtil;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 @Slf4j
 @PluginDescriptor(
@@ -140,6 +143,30 @@ public class FireBeatsPlugin extends Plugin
 		}
 	}
 
+	private String getTrackLink(String anonFilesLink)
+	{
+		String link = "";
+
+		try
+		{
+			Document doc = Jsoup.connect(anonFilesLink).get();
+
+			Element downloadUrl = doc.getElementById("download-url");
+
+			link = downloadUrl.attr("href");
+
+			link = link.replace(" ", "%20");
+
+			log.info("Link: " + link);
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+
+		return link;
+	}
+
 	private void fadeCurrentTrack()
 	{
 		if (trackPlayer.getVolume() == 0)
@@ -184,6 +211,7 @@ public class FireBeatsPlugin extends Plugin
 
 		overlayManager.add(overlay);
 
+
 		log.info("Fire Beats started!");
 	}
 
@@ -214,7 +242,9 @@ public class FireBeatsPlugin extends Plugin
 				{
 					remixAvailable = true;
 					trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
-					trackPlayer.addToPlayList(new URL(track.link));
+					// Get actual track link
+					String directLink = getTrackLink(track.link);
+					trackPlayer.addToPlayList(new URL(directLink));
 					trackPlayer.play();
 				}
 				else
@@ -286,7 +316,9 @@ public class FireBeatsPlugin extends Plugin
 						remixAvailable = true;
 						client.setMusicVolume(0);
 						trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
-						trackPlayer.addToPlayList(new URL(track.link));
+						// Get actual track link
+						String directLink = getTrackLink(track.link);
+						trackPlayer.addToPlayList(new URL(directLink));
 						trackPlayer.play();
 						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
 								"",
@@ -331,8 +363,6 @@ public class FireBeatsPlugin extends Plugin
 					{
 						trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
 					}
-
-					//trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
 
 					client.setMusicVolume(0);
 				}
