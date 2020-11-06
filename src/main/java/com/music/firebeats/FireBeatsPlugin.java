@@ -1,3 +1,28 @@
+/*
+ * Copyright (c) 2020, RKGman
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.music.firebeats;
 
 import com.google.inject.Provides;
@@ -25,8 +50,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import java.awt.image.BufferedImage;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.net.HttpURLConnection;
 import java.util.*;
 import java.io.*;
 import java.net.URL;
@@ -61,6 +85,9 @@ public class FireBeatsPlugin extends Plugin
 	@Inject
 	private FireBeatsOverlay overlay;
 
+	private final String TRACK_LIST_REPO =
+			"https://raw.githubusercontent.com/RKGman/fire-beats/master/src/main/resources/Osrs-Track-Remix-List.csv";
+
 	private final int FADING_TRACK_STATE = 0;
 
 	private final int PLAYING_TRACK_STATE = 1;
@@ -93,13 +120,16 @@ public class FireBeatsPlugin extends Plugin
 		{
 			// Check if track listing CSV exists.
 			File trackFile = new File(RuneLite.RUNELITE_DIR, "Osrs-Track-Remix-List.csv");
-			URL trackResource = getClass().getClassLoader().getResource("Osrs-Track-Remix-List.csv");
 			if(trackFile.exists() == false) {
 				// Copy default track list from resources.
-				Files.copy(
-						new File(trackResource.getPath()).toPath(),
-						trackFile.toPath(),
-						StandardCopyOption.REPLACE_EXISTING);
+				String updatedCsv = getUpdatedListFromRepo();
+				FileWriter writer = new FileWriter(trackFile.getPath());
+				writer.write(updatedCsv);
+				writer.close();
+			}
+			else if (config.updateFromRepo() == true)
+			{
+				updateListFromRepo(false);
 			}
 
 			String line = "";
@@ -111,14 +141,14 @@ public class FireBeatsPlugin extends Plugin
 				String[] track = line.split(delimiter);    // use comma as separator
 				if (track.length == 1)
 				{
-					System.out.println("Track: [Name=" + track[0] + "]");
+					// System.out.println("Track: [Name=" + track[0] + "]");
 					Track newTrack = new Track();
 					newTrack.name = track[0];
 					mp3Map.put(track[0], newTrack);
 				}
 				else if (track.length == 2)
 				{
-					System.out.println("Track: [Name=" + track[0] + ", Link=" + track[1] + "]");
+					// System.out.println("Track: [Name=" + track[0] + ", Link=" + track[1] + "]");
 					Track newTrack = new Track();
 					newTrack.name = track[0];
 					newTrack.link = track[1];
@@ -126,7 +156,7 @@ public class FireBeatsPlugin extends Plugin
 				}
 				else
 				{
-					System.out.println("Track: [Name=" + track[0] + ", Link=" + track[1] + ", Credit=" + track[2] + "]");
+					// System.out.println("Track: [Name=" + track[0] + ", Link=" + track[1] + ", Credit=" + track[2] + "]");
 					Track newTrack = new Track();
 					newTrack.name = track[0];
 					newTrack.link = track[1];
@@ -190,6 +220,42 @@ public class FireBeatsPlugin extends Plugin
 
 	}
 
+	private String getUpdatedListFromRepo()
+	{
+		String rv = "";
+
+		try
+		{
+			URL url = new URL(TRACK_LIST_REPO);
+
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+			connection.setRequestMethod("GET");
+
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(connection.getInputStream()));
+
+			String inputLine;
+			StringBuffer content = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				content.append(inputLine + "\n");
+			}
+
+			in.close();
+
+			rv = content.toString();
+
+			connection.disconnect();
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+
+		return rv;
+	}
+
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -210,7 +276,6 @@ public class FireBeatsPlugin extends Plugin
 		buildMp3TrackMap();
 
 		overlayManager.add(overlay);
-
 
 		log.info("Fire Beats started!");
 	}
@@ -392,6 +457,42 @@ public class FireBeatsPlugin extends Plugin
 	FireBeatsConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(FireBeatsConfig.class);
+	}
+
+	public void updateListFromRepo(boolean updateMap)
+	{
+		try
+		{
+			// Check if track listing CSV exists.
+			File trackFile = new File(RuneLite.RUNELITE_DIR, "Osrs-Track-Remix-List.csv");
+			if(trackFile.exists() == false) {
+				// Copy default track list from resources.
+				String updatedCsv = getUpdatedListFromRepo();
+				FileWriter writer = new FileWriter(trackFile.getPath());
+				writer.write(updatedCsv);
+				writer.close();
+			}
+			else
+			{
+				// Overwrite contents with new
+				trackFile.delete();
+				String updatedCsv = getUpdatedListFromRepo();
+				FileWriter writer = new FileWriter(trackFile.getPath());
+				writer.write(updatedCsv);
+				writer.close();
+			}
+
+			// Reload map if necessary
+			if (updateMap == true)
+			{
+				buildMp3TrackMap();
+			}
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+
 	}
 
 	public Widget getCurrentTrackBox()

@@ -5,7 +5,7 @@ This plugin plays a remix of a track that is currently playing in game.
 
 ## Using the Fire Beats plugin
 
-Once the plugin is installed, there shouhld be a Fire Beats icon in the Runelite sidebar.  When you click it, the controls panel will appear.
+After installing the plugin, there should be a Fire Beats icon in the Runelite sidebar.  When you click it, the controls panel will appear.
 
 ![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_fire_beats_controlMenu.gif)
 
@@ -31,6 +31,13 @@ The Show Track Name checkbox makes the box at the top of the overlay visible or 
 The Play Original When No Remix checkbox will allow or disallow the original music to play if a remix link is not found for the original track.
   - Basically, if you only want to hear remixes and not original tracks, you can uncheck this.
   
+### Update Track List (Button)
+This button will force the plugin to update and overwrite the listing of tracks from the official repository
+
+### Auto Update List From Repo
+The Auto Update List From Repo checkbox will enable or disable automatically overwriting the listing of tracks pulled from the official repository when the client starts.
+  - If you want to manually have control over the links, you will want to disable this.
+  
 ## Credit to producers
 
 A message will appear in the game chat when a remix is played, showing who produced the remix.
@@ -39,17 +46,25 @@ A message will appear in the game chat when a remix is played, showing who produ
 
 ## Customizing the track list
 
-Links for tracks (in mp3 format) are pulled from a local CSV which resides in the user's local .runelite folder.
+NOTE: First ensure that you have unchecked the Auto Update List From Repo checkbox in the settings.
 
 There are three columns in the CSV.  
 
 The first is the name of the in game track (which should not be modified).
 
-The second is the link to an mp3 file.
+The second is the link to an anonfile download page.
 
-The third is the producing artist for creditting in the game chat.
+The third is the producing artist to credit in the game chat.
 
-A user can modify this CSV with custom mp3 links for any song.
+Links must be the download page of a file uploaded to https://anonfiles.com/ 
+
+For example: `https://anonfiles.com/T2Fbf7n5pd/OSRSBeatz_-_Wilderness_mp3`
+
+    This is not a direct mp3 link.  The direct link will be scraped later. 
+
+Upload whatever mp3 file you want to anonfiles, then replace the link in the CSV. 
+
+The file you upload must be an mp3.
 
 ## Known issues
 
@@ -57,4 +72,4 @@ A user can modify this CSV with custom mp3 links for any song.
 
 ## Features in developement
 
-- Ability to update the CSV without having to delete the file in the local directory first.
+- Ability to use the SoundCloud API to stream tracks.
