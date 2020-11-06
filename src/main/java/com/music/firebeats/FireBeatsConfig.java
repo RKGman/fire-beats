@@ -1,3 +1,28 @@
+/*
+ * Copyright (c) 2020, RKGman
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.music.firebeats;
 
 import net.runelite.client.config.Config;
@@ -69,10 +94,29 @@ public interface FireBeatsConfig extends Config
 	void setPlayOriginalIfNoRemix(boolean value);
 
 	@ConfigItem(
+			keyName = "updateFromRepo",
+			name = "Automatically Update From Repository",
+			description = "On start, automatically pull a running list from the repository.",
+			position = 3
+	)
+	default boolean updateFromRepo()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "updateFromRepo",
+			name = "",
+			description = "",
+			hidden = true
+	)
+	void setUpdateFromRepo(boolean value);
+
+	@ConfigItem(
 			keyName = "showCurrentTrackName",
 			name = "Show the current track name",
 			description = "Displays the current track name without having to open the music tab.",
-			position = 3
+			position = 4
 	)
 	default boolean showCurrentTrackName() { return true; }
 
@@ -91,7 +135,7 @@ public interface FireBeatsConfig extends Config
 			keyName = "remixVolumeOffset",
 			name = "Remix volume offset",
 			description = "Amount to decrease volume of remix to match in-game volume.",
-			position = 4
+			position = 5
 	)
 	default int remixVolumeOffset()
 	{

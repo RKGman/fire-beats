@@ -1,3 +1,28 @@
+/*
+ * Copyright (c) 2020, RKGman
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.music.firebeats;
 
 import java.awt.*;
@@ -17,8 +42,6 @@ import net.runelite.client.ui.PluginPanel;
 public
 class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListener
 {
-    private final JPanel configPanel = new JPanel();
-
     FireBeatsPlugin fireBeatsPlugin;
 
     public FireBeatsPanel(FireBeatsPlugin fireBeatsPlugin)
@@ -116,6 +139,33 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         togglePanel.add(playOriginalCheckBox);
         togglePanel.add(new JSeparator());
 
+        // Update Button
+        JButton updateFromRepoButton = new JButton("Update Track List");
+        updateFromRepoButton.setName("updateButton");
+        updateFromRepoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // log.info("Button pushed to update CSV.");
+                // method to update CSV list.
+                fireBeatsPlugin.updateListFromRepo(true);
+            }
+        });
+        togglePanel.add(updateFromRepoButton);
+        togglePanel.add(new JSeparator());
+
+        // Automatically Pull List From Repository
+        JLabel updateFromRepoLabel = new JLabel();
+        updateFromRepoLabel.setText("Auto Update List From Repo:");
+        updateFromRepoLabel.setForeground(Color.WHITE);
+        JCheckBox updateFromRepoCheckBox = new JCheckBox();
+        updateFromRepoCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().updateFromRepo());
+        updateFromRepoCheckBox.setForeground(Color.WHITE);
+        updateFromRepoCheckBox.setName("updateFromRepo");
+        updateFromRepoCheckBox.addActionListener((ActionListener) this);
+        togglePanel.add(updateFromRepoLabel);
+        togglePanel.add(updateFromRepoCheckBox);
+        togglePanel.add(new JSeparator());
+
         volumePanel.add(togglePanel);
 
         add(volumePanel, BorderLayout.CENTER);
@@ -127,7 +177,7 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         if (!source.getValueIsAdjusting()) {
             if (source.getName() == "volume")
             {
-                log.info("Volume is " + source.getValue());
+                // log.info("Volume is " + source.getValue());
                 if (source.getValue() < fireBeatsPlugin.getMusicConfig().remixVolumeOffset())
                 {
                     fireBeatsPlugin.getMusicConfig().setVolume(fireBeatsPlugin.getMusicConfig().remixVolumeOffset());
@@ -139,7 +189,7 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
             }
             else if (source.getName() == "remixOffset")
             {
-                log.info("Remix offset is " + source.getValue());
+                // log.info("Remix offset is " + source.getValue());
                 fireBeatsPlugin.getMusicConfig().setRemixVolumeOffset(source.getValue());
             }
 
@@ -151,18 +201,23 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         JCheckBox source = (JCheckBox)e.getSource();
         if (source.getName() == "mute")
         {
-            log.info("Value of mute is " + source.isSelected());
+            // log.info("Value of mute is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setMute(source.isSelected());
         }
         else if (source.getName() == "showTrackName")
         {
-            log.info("Value of showTrackName is " + source.isSelected());
+            // log.info("Value of showTrackName is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setShowCurrentTrackName(source.isSelected());
         }
         else if (source.getName() == "playOriginal")
         {
-            log.info("Value of playOriginal is " + source.isSelected());
+            // log.info("Value of playOriginal is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setPlayOriginalIfNoRemix(source.isSelected());
+        }
+        else if (source.getName() == "updateFromRepo")
+        {
+            // log.info("Value of updateFromRepo is " + source.isSelected());
+            fireBeatsPlugin.getMusicConfig().setUpdateFromRepo(source.isSelected());
         }
     }
 }
