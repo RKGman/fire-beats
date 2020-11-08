@@ -123,10 +123,9 @@ public class FireBeatsPlugin extends Plugin
 
 		try
 		{
-			File whitelistFile =
-					new File(FireBeatsPlugin.class.getClassLoader().getResource(whitelistResource).getPath());
+			InputStream whitelistStream = FireBeatsPlugin.class.getClassLoader().getResourceAsStream(whitelistResource);
 
-			BufferedReader br = new BufferedReader(new FileReader(whitelistFile.toPath().toString()));
+			BufferedReader br = new BufferedReader(new InputStreamReader(whitelistStream));
 
 			String line = "";
 			String delimiter = ",";
