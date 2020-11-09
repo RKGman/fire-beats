@@ -69,7 +69,10 @@ The file you upload must be an mp3.
 ## Known issues
 
 - The controls do not apply to the log in screen.
+- In some cases the Current Track overlay display doesn't show up; this may be due to a conflict with other external plugins.
 
 ## Features in developement
 
 - Ability to use the SoundCloud API to stream tracks.
+- Ability to loop tracks.
+- Assign a different color to a track containing a remix in the music tab.
