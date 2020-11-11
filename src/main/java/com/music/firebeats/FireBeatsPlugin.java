@@ -279,7 +279,6 @@ public class FireBeatsPlugin extends Plugin
 		else
 		{
 			trackPlayer.setVolume(trackPlayer.getVolume() - 7);
-
 			if (trackPlayer.getVolume() < 7)
 			{
 				trackPlayer.setVolume(0);
@@ -610,11 +609,6 @@ public class FireBeatsPlugin extends Plugin
 					}
 
 					client.setMusicVolume(0);
-				}
-				else
-				{
-					client.setMusicVolume(0);
-					trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
 				}
 			}
 			else
