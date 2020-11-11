@@ -143,7 +143,7 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
 
         // Shuffle Mode
         JLabel shuffleLabel = new JLabel();
-        shuffleLabel.setText("Shuffle Mode:");
+        shuffleLabel.setText("Shuffle Mode - (WIP):");
         shuffleLabel.setForeground(Color.WHITE);
         JRadioButton shuffleRadioButton = new JRadioButton();
         shuffleRadioButton.setSelected(fireBeatsPlugin.getMusicConfig().shuffleMode());

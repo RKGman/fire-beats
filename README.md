@@ -7,7 +7,13 @@ This plugin plays a remix of a track that is currently playing in game.
 
 After installing the plugin, there should be a Fire Beats icon in the Runelite sidebar.  When you click it, the controls panel will appear.
 
-![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_fire_beats_controlMenu.gif)
+![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_rb_1.1.2_controls.gif)
+
+### Track Remix Tagging
+
+In the Music tab, tracks containing a remix link will be colored cyan.
+
+!![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_rb_1.1.2_tags.gif)
 
 ## Settings (Notes)
 
@@ -22,10 +28,19 @@ The Remix Offset slider controls the amount of volume to reduce from the remix t
 The Mute checkbox will mute all music in game.
   - Note that this still does not include sound effects and area sounds.
   
-### Show Track Name
-The Show Track Name checkbox makes the box at the top of the overlay visible or invisible.  
+### Loop (Radio Button)
+This is the default play state for the plugin.  Tracks will loop indefinitely.  
 
-![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_fire_beats_showTrackName.gif)
+### Shuffle Mode (Radio Button)
+When a track ends, randomly select another available remix to begin playing.
+
+### Shuffle to Next Track (Button)
+Immediately skip to a new randomly selected remix.  This forces the plugin into Shuffle Mode.
+  
+### Show Area's Track Name
+The Show Area's Track Name checkbox makes the box at the top of the overlay visible or invisible.  
+
+![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_rb_1.1.2_showTrack.gif)
 
 ### Play Original When No Remix
 The Play Original When No Remix checkbox will allow or disallow the original music to play if a remix link is not found for the original track.
@@ -42,7 +57,7 @@ The Auto Update List From Repo checkbox will enable or disable automatically ove
 
 A message will appear in the game chat when a remix is played, showing who produced the remix.
 
-![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_fire_beats_remixInfo.gif)
+![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_rb_1.1.2_playTrack.gif)
 
 ## Customizing the track list
 
@@ -70,9 +85,10 @@ The file you upload must be an mp3.
 
 - The controls do not apply to the log in screen.
 - In some cases the Current Track overlay display doesn't show up; this may be due to a conflict with other external plugins.
+- In shuffle mode, volume sliders don't apply.
+- Mute kills shuffle.  Button to shuffle to new track must be clicked to resume.
 
 ## Features in developement
 
 - Ability to use the SoundCloud API to stream tracks.
-- Ability to loop tracks.
-- Assign a different color to a track containing a remix in the music tab.
+
