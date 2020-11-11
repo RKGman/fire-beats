@@ -29,13 +29,8 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.*;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -49,11 +44,13 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.HttpURLConnection;
 import java.util.*;
 import java.io.*;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 import jaco.mp3.player.MP3Player;
 import net.runelite.client.util.ImageUtil;
@@ -109,7 +106,11 @@ public class FireBeatsPlugin extends Plugin
 
 	private MP3Player trackPlayer = new MP3Player();
 
+	private Thread handlePlayThread = null;
+
 	private Map<String, Track> mp3Map = new HashMap<String, Track>();
+
+	private Collection<Widget> tracks = null;
 
 	private boolean remixAvailable = false;
 
@@ -322,6 +323,84 @@ public class FireBeatsPlugin extends Plugin
 		return rv;
 	}
 
+	private boolean isOnMusicTab()
+	{
+		return client.getVar(VarClientInt.INVENTORY_TAB) == 13;
+	}
+
+	private void tagRemixedTracks()
+	{
+		final Widget musicList = client.getWidget(WidgetInfo.MUSIC_TRACK_LIST);
+
+		if (tracks == null)
+		{
+			tracks = Arrays.stream(musicList.getDynamicChildren())
+					.sorted(Comparator.comparing(Widget::getRelativeY))
+					.collect(Collectors.toList());
+		}
+
+		for (Widget track : tracks)
+		{
+			Track mappedTrack = mp3Map.get(track.getText());
+			if (mappedTrack != null && mappedTrack.link != null)
+			{
+				// The track can be played, mark cyan.
+				track.setTextColor(Color.CYAN.getRGB());
+				// TODO: Figure out how to mark tracks not unlocked.  getColor doesn't match with Color.red / green
+			}
+		}
+	}
+
+	private void playTrack(boolean repeat) {
+		trackPlayer.getPlayList().clear();
+
+		Track track = mp3Map.get(nextTrack);
+
+		if (repeat == true)
+		{
+			track = mp3Map.get(previousTrack);
+		}
+
+		if (track!= null && track.link != null)
+		{
+			remixAvailable = true;
+			client.setMusicVolume(0);
+			trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
+			Track finalTrack = track;
+			handlePlayThread = new Thread(() -> {
+				try
+				{
+					// Get actual track link
+					String directLink = getTrackLink(finalTrack.link);
+					trackPlayer.addToPlayList(new URL(directLink));
+					trackPlayer.play();
+				}
+				catch (Exception e)
+				{
+					log.error(e.getMessage());
+				}
+			});
+
+			handlePlayThread.start();
+
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+					"",
+					"Fire Beats Notice: " + track.name + " remix produced by " + track.credit,
+					null);
+
+			initializeTrack = false;
+		}
+		else
+		{
+			remixAvailable = false;
+			if (config.playOriginalIfNoRemix() == true)
+			{
+				client.setMusicVolume(config.volume());
+				initializeTrack = false;
+			}
+		}
+	}
+
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -353,6 +432,15 @@ public class FireBeatsPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onVarClientIntChanged(VarClientIntChanged varClientIntChanged)
+	{
+		if (isOnMusicTab() == true)
+		{
+			tagRemixedTracks();
+		}
+	}
+
+	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
@@ -364,8 +452,14 @@ public class FireBeatsPlugin extends Plugin
 			try
 			{
 				client.setMusicVolume(0); // Attempt to force mute.
+
+				if (config.mute() == true)
+				{
+					trackPlayer.setVolume(0);
+				}
+
 				// Stop current track
-				trackPlayer.stop();
+				// trackPlayer.stop();
 				trackPlayer.getPlayList().clear();
 				// Start playing new track
 				Track track = mp3Map.get("Scape Main");
@@ -373,10 +467,21 @@ public class FireBeatsPlugin extends Plugin
 				{
 					remixAvailable = true;
 					trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
-					// Get actual track link
-					String directLink = getTrackLink(track.link);
-					trackPlayer.addToPlayList(new URL(directLink));
-					trackPlayer.play();
+					handlePlayThread = new Thread(() -> {
+						try
+						{
+							// Get actual track link
+							String directLink = getTrackLink(track.link);
+							trackPlayer.addToPlayList(new URL(directLink));
+							trackPlayer.play();
+						}
+						catch (Exception e)
+						{
+							log.error(e.getMessage());
+						}
+					});
+
+					handlePlayThread.start();
 				}
 				else
 				{
@@ -417,6 +522,17 @@ public class FireBeatsPlugin extends Plugin
 				MusicWidgetInfo.MUSIC_CURRENT_TRACK.getGroupId(),
 				MusicWidgetInfo.MUSIC_CURRENT_TRACK.getChildId());
 
+		// If loop flag set, the player is loaded with music, and it is no longer playing, start again.
+		if (config.loop() == true && trackPlayer.getPlayList().size() > 0 && trackPlayer.isPlaying() == false)
+		{
+			playTrack(true);
+		}
+
+		if (isOnMusicTab() == true)
+		{
+			tagRemixedTracks();
+		}
+
 		if (previousTrack != currentTrack.getText())
 		{
 			changingTracks = true;
@@ -439,33 +555,7 @@ public class FireBeatsPlugin extends Plugin
 			{
 				if (initializeTrack == true)
 				{
-					trackPlayer.getPlayList().clear();
-					// Start playing new track
-					Track track = mp3Map.get(nextTrack);
-					if (track.link != null)
-					{
-						remixAvailable = true;
-						client.setMusicVolume(0);
-						trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
-						// Get actual track link
-						String directLink = getTrackLink(track.link);
-						trackPlayer.addToPlayList(new URL(directLink));
-						trackPlayer.play();
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-								"",
-								"Fire Beats Notice: " + track.name + " remix produced by " + track.credit,
-								null);
-						initializeTrack = false;
-					}
-					else
-					{
-						remixAvailable = false;
-						if (config.playOriginalIfNoRemix() == true)
-						{
-							client.setMusicVolume(config.volume());
-							initializeTrack = false;
-						}
-					}
+					playTrack(false);
 				}
 			}
 		}
@@ -516,6 +606,15 @@ public class FireBeatsPlugin extends Plugin
 		if (currentTrackBox != null)
 		{
 			currentTrackBox.setText(currentTrack.getText());
+
+			if (mp3Map.get(currentTrack.getText()) != null && mp3Map.get(currentTrack.getText()).link != null)
+			{
+				currentTrack.setTextColor(Color.CYAN.getRGB());
+			}
+			else
+			{
+				currentTrack.setTextColor(Color.GREEN.getRGB());
+			}
 		}
 	}
 
