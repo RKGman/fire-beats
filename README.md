@@ -85,8 +85,8 @@ The file you upload must be an mp3.
 
 - The controls do not apply to the log in screen.
 - In some cases the Current Track overlay display doesn't show up; this may be due to a conflict with other external plugins.
-- In shuffle mode, volume sliders don't apply.
 - Mute kills shuffle.  Button to shuffle to new track must be clicked to resume.
+- Track name with commas in name broken.
 
 ## Features in developement
 
