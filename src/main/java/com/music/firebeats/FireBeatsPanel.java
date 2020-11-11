@@ -111,6 +111,19 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         togglePanel.add(new JSeparator());
         togglePanel.add(muteLabel);
         togglePanel.add(muteCheckBox);
+
+        // Loop
+        JLabel loopLabel = new JLabel();
+        loopLabel.setText("Loop:");
+        loopLabel.setForeground(Color.WHITE);
+        JCheckBox loopCheckBox = new JCheckBox();
+        loopCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().loop());
+        loopCheckBox.setForeground(Color.WHITE);
+        loopCheckBox.setName("loop");
+        loopCheckBox.addActionListener((ActionListener) this);
+        togglePanel.add(new JSeparator());
+        togglePanel.add(loopLabel);
+        togglePanel.add(loopCheckBox);
         togglePanel.add(new JSeparator());
 
         // Show Track Name
@@ -203,6 +216,10 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         {
             // log.info("Value of mute is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setMute(source.isSelected());
+        }
+        else if (source.getName() == "loop")
+        {
+            fireBeatsPlugin.getMusicConfig().setLoop(source.isSelected());
         }
         else if (source.getName() == "showTrackName")
         {
