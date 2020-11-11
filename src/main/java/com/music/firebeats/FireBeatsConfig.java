@@ -94,10 +94,29 @@ public interface FireBeatsConfig extends Config
 	void setLoop(boolean value);
 
 	@ConfigItem(
+			keyName = "shuffleMode",
+			name = "Shuffle Mode",
+			description = "Shuffle tracks on command",
+			position = 3
+	)
+	default boolean shuffleMode()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "shuffleMode",
+			name = "Shuffle Mode",
+			description = "Shuffle tracks on command",
+			hidden = true
+	)
+	void setShuffleMode(boolean value);
+
+	@ConfigItem(
 			keyName = "playOriginalIfNoRemix",
 			name = "Play original track if no remix",
 			description = "Play the original track if the remix link is broken or does not exist.",
-			position = 3
+			position = 4
 	)
 	default boolean playOriginalIfNoRemix()
 	{
@@ -116,7 +135,7 @@ public interface FireBeatsConfig extends Config
 			keyName = "updateFromRepo",
 			name = "Automatically Update From Repository",
 			description = "On start, automatically pull a running list from the repository.",
-			position = 4
+			position = 5
 	)
 	default boolean updateFromRepo()
 	{
@@ -135,7 +154,7 @@ public interface FireBeatsConfig extends Config
 			keyName = "showCurrentTrackName",
 			name = "Show the current track name",
 			description = "Displays the current track name without having to open the music tab.",
-			position = 5
+			position = 6
 	)
 	default boolean showCurrentTrackName() { return true; }
 
@@ -154,7 +173,7 @@ public interface FireBeatsConfig extends Config
 			keyName = "remixVolumeOffset",
 			name = "Remix volume offset",
 			description = "Amount to decrease volume of remix to match in-game volume.",
-			position = 6
+			position = 7
 	)
 	default int remixVolumeOffset()
 	{

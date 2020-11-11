@@ -110,6 +110,10 @@ public class FireBeatsPlugin extends Plugin
 
 	private Map<String, Track> mp3Map = new HashMap<String, Track>();
 
+	private ArrayList<String> availableTrackNameArray = new ArrayList<String>();
+
+	private Random rng = new Random();
+
 	private Collection<Widget> tracks = null;
 
 	private boolean remixAvailable = false;
@@ -117,6 +121,8 @@ public class FireBeatsPlugin extends Plugin
 	private boolean changingTracks = false;
 
 	private boolean initializeTrack = true;
+
+	private boolean comingFromLogin = true;
 
 	private static Map createDomainWhitelistMap(String whitelistResource)
 	{
@@ -212,6 +218,7 @@ public class FireBeatsPlugin extends Plugin
 					newTrack.name = track[0];
 					newTrack.link = track[1];
 					mp3Map.put(track[0], newTrack);
+					availableTrackNameArray.add(track[0]);
 				}
 				else
 				{
@@ -221,6 +228,7 @@ public class FireBeatsPlugin extends Plugin
 					newTrack.link = track[1];
 					newTrack.credit = track[2];
 					mp3Map.put(track[0], newTrack);
+					availableTrackNameArray.add(track[0]);
 				}
 			}
 
@@ -278,6 +286,7 @@ public class FireBeatsPlugin extends Plugin
 				trackPlayer.stop();
 				previousTrack = nextTrack;
 				currentPlayerState = PLAYING_TRACK_STATE;
+				comingFromLogin = false;
 			}
 		}
 
@@ -351,7 +360,7 @@ public class FireBeatsPlugin extends Plugin
 		}
 	}
 
-	private void playTrack(boolean repeat) {
+	private void playTrack(boolean repeat, boolean shuffle) {
 		trackPlayer.getPlayList().clear();
 
 		Track track = mp3Map.get(nextTrack);
@@ -361,7 +370,12 @@ public class FireBeatsPlugin extends Plugin
 			track = mp3Map.get(previousTrack);
 		}
 
-		if (track!= null && track.link != null)
+		if (shuffle == true)
+		{
+			track = mp3Map.get(availableTrackNameArray.get(rng.nextInt(availableTrackNameArray.size())));
+		}
+
+		if (track != null && track.link != null)
 		{
 			remixAvailable = true;
 			client.setMusicVolume(0);
@@ -452,6 +466,7 @@ public class FireBeatsPlugin extends Plugin
 			try
 			{
 				client.setMusicVolume(0); // Attempt to force mute.
+				comingFromLogin = true;
 
 				if (config.mute() == true)
 				{
@@ -525,7 +540,12 @@ public class FireBeatsPlugin extends Plugin
 		// If loop flag set, the player is loaded with music, and it is no longer playing, start again.
 		if (config.loop() == true && trackPlayer.getPlayList().size() > 0 && trackPlayer.isPlaying() == false)
 		{
-			playTrack(true);
+			playTrack(true, false);
+		}
+
+		if (config.shuffleMode() == true && trackPlayer.getPlayList().size() > 0 && trackPlayer.isPlaying() == false)
+		{
+			shuffleNextTrack();
 		}
 
 		if (isOnMusicTab() == true)
@@ -545,17 +565,21 @@ public class FireBeatsPlugin extends Plugin
 			changingTracks = false;
 		}
 
+
 		try
 		{
 			if (changingTracks == true && currentPlayerState == FADING_TRACK_STATE)
 			{
-				fadeCurrentTrack();
+				if (config.shuffleMode() == false || comingFromLogin == true)
+				{
+					fadeCurrentTrack();
+				}
 			}
 			else
 			{
 				if (initializeTrack == true)
 				{
-					playTrack(false);
+						playTrack(false, false);
 				}
 			}
 		}
@@ -586,6 +610,11 @@ public class FireBeatsPlugin extends Plugin
 					}
 
 					client.setMusicVolume(0);
+				}
+				else
+				{
+					client.setMusicVolume(0);
+					trackPlayer.setVolume(config.volume() - config.remixVolumeOffset());
 				}
 			}
 			else
@@ -658,6 +687,11 @@ public class FireBeatsPlugin extends Plugin
 			log.error(e.getMessage());
 		}
 
+	}
+
+	public void shuffleNextTrack()
+	{
+		playTrack(false, true);
 	}
 
 	public Widget getCurrentTrackBox()
