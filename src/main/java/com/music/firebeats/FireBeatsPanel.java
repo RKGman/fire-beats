@@ -44,6 +44,8 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
 {
     FireBeatsPlugin fireBeatsPlugin;
 
+
+
     public FireBeatsPanel(FireBeatsPlugin fireBeatsPlugin)
     {
         super(false);
@@ -112,23 +114,79 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         togglePanel.add(muteLabel);
         togglePanel.add(muteCheckBox);
 
+        ButtonGroup bg = new ButtonGroup();
+
         // Loop
         JLabel loopLabel = new JLabel();
-        loopLabel.setText("Loop:");
+        loopLabel.setText("Loop - Normal Mode:");
         loopLabel.setForeground(Color.WHITE);
-        JCheckBox loopCheckBox = new JCheckBox();
-        loopCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().loop());
-        loopCheckBox.setForeground(Color.WHITE);
-        loopCheckBox.setName("loop");
-        loopCheckBox.addActionListener((ActionListener) this);
+        JRadioButton loopRadioButton = new JRadioButton();
+        loopRadioButton.setSelected(fireBeatsPlugin.getMusicConfig().loop());
+        loopRadioButton.setForeground(Color.WHITE);
+        loopRadioButton.setName("loop");
+        loopRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JRadioButton source = (JRadioButton)e.getSource();
+                fireBeatsPlugin.getMusicConfig().setLoop(source.isSelected());
+
+                if (source.isSelected() == true)
+                {
+                    fireBeatsPlugin.getMusicConfig().setShuffleMode(false);
+                }
+            }
+        });
+        bg.add(loopRadioButton);
         togglePanel.add(new JSeparator());
         togglePanel.add(loopLabel);
-        togglePanel.add(loopCheckBox);
+        togglePanel.add(loopRadioButton);
+
+        // Shuffle Mode
+        JLabel shuffleLabel = new JLabel();
+        shuffleLabel.setText("Shuffle Mode:");
+        shuffleLabel.setForeground(Color.WHITE);
+        JRadioButton shuffleRadioButton = new JRadioButton();
+        shuffleRadioButton.setSelected(fireBeatsPlugin.getMusicConfig().shuffleMode());
+        shuffleRadioButton.setForeground(Color.WHITE);
+        shuffleRadioButton.setName("shuffle");
+        shuffleRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JRadioButton source = (JRadioButton)e.getSource();
+                fireBeatsPlugin.getMusicConfig().setShuffleMode(source.isSelected());
+
+                if (source.isSelected() == true)
+                {
+                    fireBeatsPlugin.getMusicConfig().setLoop(false);
+                    // loop.setSelected(false);
+                }
+            }
+        });
+        togglePanel.add(new JSeparator());
+        togglePanel.add(shuffleLabel);
+        togglePanel.add(shuffleRadioButton);
+        bg.add(shuffleRadioButton);
+        togglePanel.add(new JSeparator());
+
+        // Shuffle Next Button
+        JButton shuffleNextTrackButton = new JButton("Shuffle to Next Track  >>");
+        shuffleNextTrackButton.setName("shuffleButton");
+        shuffleNextTrackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fireBeatsPlugin.getMusicConfig().setLoop(false);
+                loopRadioButton.setSelected(false);
+                fireBeatsPlugin.getMusicConfig().setShuffleMode(true);
+                shuffleRadioButton.setSelected(true);
+                fireBeatsPlugin.shuffleNextTrack();
+            }
+        });
+        togglePanel.add(shuffleNextTrackButton);
         togglePanel.add(new JSeparator());
 
         // Show Track Name
         JLabel showTrackLabel = new JLabel();
-        showTrackLabel.setText("Show Track Name:");
+        showTrackLabel.setText("Show Area's Track Name:");
         showTrackLabel.setForeground(Color.WHITE);
         JCheckBox showTrackCheckBox = new JCheckBox();
         showTrackCheckBox.setSelected(fireBeatsPlugin.getMusicConfig().showCurrentTrackName());
@@ -216,10 +274,6 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         {
             // log.info("Value of mute is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setMute(source.isSelected());
-        }
-        else if (source.getName() == "loop")
-        {
-            fireBeatsPlugin.getMusicConfig().setLoop(source.isSelected());
         }
         else if (source.getName() == "showTrackName")
         {

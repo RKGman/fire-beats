@@ -56,12 +56,12 @@ public class FireBeatsOverlay extends OverlayPanel {
         if (plugin.getMusicConfig().showCurrentTrackName() == true)
         {
             panelComponent.getChildren().add(TitleComponent.builder()
-                    .text("Current Track: " + plugin.getCurrentTrackBox().getText())
+                    .text("Area's Track Name: " + plugin.getCurrentTrackBox().getText())
                     .color(Color.GREEN)
                     .build());
 
             panelComponent.setPreferredSize(new Dimension(
-                    graphics.getFontMetrics().stringWidth("Current Track: " +
+                    graphics.getFontMetrics().stringWidth("Area's Track Name: " +
                             plugin.getCurrentTrackBox().getText()) + 10,
                     0));
 
