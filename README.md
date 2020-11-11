@@ -13,7 +13,7 @@ After installing the plugin, there should be a Fire Beats icon in the Runelite s
 
 In the Music tab, tracks containing a remix link will be colored cyan.
 
-!![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_rb_1.1.2_tags.gif)
+![Alt Text](http://rknako.com/wp-content/uploads/2020/11/rl_rb_1.1.2_tags.gif)
 
 ## Settings (Notes)
 
