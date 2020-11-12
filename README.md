@@ -88,7 +88,9 @@ The file you upload must be an mp3.
 - Mute kills shuffle.  Button to shuffle to new track must be clicked to resume.
 - Track name with commas in name broken.
 
+- If anonfiles goes down or download speeds are slowed, streams are a pain to listen to (see features in developement).
+
 ## Features in developement
 
-- Ability to use the SoundCloud API to stream tracks.
+- Ability to use the SoundCloud API to stream tracks.  Not sure why SoundCloud dropped Java support for the API, but I could sure use some help.  I am open to suggestions on other mp3 streaming pipelines.
 
