@@ -87,8 +87,9 @@ The file you upload must be an mp3.
 - In some cases the Current Track overlay display doesn't show up; this may be due to a conflict with other external plugins.
 - Mute kills shuffle.  Button to shuffle to new track must be clicked to resume.
 - Track name with commas in name broken.
-
-- If anonfiles goes down or download speeds are slowed, streams are a pain to listen to (see features in developement).
+- Small resolution / window size cuts off control panel.
+- Multiple failures to get mp3 causes game tick freezes in some cases.
+- If anonfiles goes down or download speeds are slow, streams are a pain to listen to (see features in developement).
 
 ## Features in developement
 
