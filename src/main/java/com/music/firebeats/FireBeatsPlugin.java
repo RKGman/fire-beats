@@ -257,12 +257,12 @@ public class FireBeatsPlugin extends Plugin
 
 				link = link.replace(" ", "%20");
 
-				log.info("Link: " + link);
+				// log.info("Link: " + link);
 			}
 		}
 		catch (Exception e)
 		{
-			log.error(e.getMessage());
+			// log.error(e.getMessage()); TODO: Still log but prevent spamming the file
 		}
 
 		return link;
@@ -390,7 +390,7 @@ public class FireBeatsPlugin extends Plugin
 				}
 				catch (Exception e)
 				{
-					log.error(e.getMessage());
+					// log.error(e.getMessage()); TODO: Still log but prevent spamming the file
 				}
 			});
 
@@ -441,6 +441,8 @@ public class FireBeatsPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
+		clientToolbar.removeNavigation(navButton);
+
 		log.info("Fire Beats stopped!");
 	}
 
@@ -491,7 +493,7 @@ public class FireBeatsPlugin extends Plugin
 						}
 						catch (Exception e)
 						{
-							log.error(e.getMessage());
+							// log.error(e.getMessage()); TODO: Still log but prevent spamming the file
 						}
 					});
 
@@ -584,7 +586,7 @@ public class FireBeatsPlugin extends Plugin
 		}
 		catch (Exception e)
 		{
-			log.error(e.getMessage());
+			// log.error(e.getMessage()); TODO: Still log but prevent spamming the file
 		}
 
 		if (config.mute() == true)
