@@ -443,6 +443,10 @@ public class FireBeatsPlugin extends Plugin
 	{
 		clientToolbar.removeNavigation(navButton);
 
+		overlayManager.remove(overlay);
+
+		trackPlayer.stop();
+
 		log.info("Fire Beats stopped!");
 	}
 
