@@ -9,7 +9,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.7.3'
+def runeLiteVersion = '1.7.15'
 
 dependencies {
 	implementation files('libs/jaco-mp3-player-0.9.5.jar')
@@ -21,9 +21,7 @@ dependencies {
 
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'org.slf4j:slf4j-simple:1.7.12'
-	testImplementation group: 'net.runelite', name:'client', version: runeLiteVersion, {
-		exclude group: 'ch.qos.logback', module: 'logback-classic'
-	}
+	testImplementation group: 'net.runelite', name:'client', version: runeLiteVersion
 }
 
 group = 'com.music.firebeats'
