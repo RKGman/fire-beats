@@ -31,217 +31,94 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
 
 @ConfigGroup("firebeats")
-public interface FireBeatsConfig extends Config
-{
-	@ConfigItem(
-			keyName = "mute",
-			name = "Mute",
-			description = "Mutes everything.",
-			position = 0
-	)
-	default boolean mute()
-	{
+public interface FireBeatsConfig extends Config {
+	@ConfigItem(keyName = "mute", name = "Mute", description = "Mutes everything.", position = 0)
+	default boolean mute() {
 		return false;
 	}
 
-	@ConfigItem(
-			keyName = "mute",
-			name = "Mute",
-			description = "Mutes everything.",
-			hidden = true
-	)
+	@ConfigItem(keyName = "mute", name = "Mute", description = "Mutes everything.", hidden = true)
 	void setMute(boolean value);
 
-	@Range(
-			max = 100
-	)
-	@ConfigItem(
-			keyName = "volume",
-			name = "Volume",
-			description = "Specify the volume.",
-			position = 1
-	)
-	default int volume()
-	{
+	@Range(max = 100)
+	@ConfigItem(keyName = "volume", name = "Volume", description = "Specify the volume.", position = 1)
+	default int volume() {
 		return 100;
 	}
 
-	@ConfigItem(
-			keyName = "volume",
-			name = "Volume",
-			description = "",
-			hidden = true
-	)
+	@ConfigItem(keyName = "volume", name = "Volume", description = "", hidden = true)
 	void setVolume(int val);
 
-	@ConfigItem(
-			keyName = "loop",
-			name = "Loop",
-			description = "Loop the remix track",
-			position = 2
-	)
-	default boolean loop()
-	{
+	@ConfigItem(keyName = "loop", name = "Loop", description = "Loop the remix track", position = 2)
+	default boolean loop() {
 		return true;
 	}
 
-	@ConfigItem(
-			keyName = "loop",
-			name = "Loop",
-			description = "Loop the remix track",
-			hidden = true
-	)
+	@ConfigItem(keyName = "loop", name = "Loop", description = "Loop the remix track", hidden = true)
 	void setLoop(boolean value);
 
-	@ConfigItem(
-			keyName = "shuffleMode",
-			name = "Shuffle Mode",
-			description = "Shuffle tracks on command",
-			position = 3
-	)
-	default boolean shuffleMode()
-	{
+	@ConfigItem(keyName = "shuffleMode", name = "Shuffle Mode", description = "Shuffle tracks on command", position = 3)
+	default boolean shuffleMode() {
 		return false;
 	}
 
-	@ConfigItem(
-			keyName = "shuffleMode",
-			name = "Shuffle Mode",
-			description = "Shuffle tracks on command",
-			hidden = true
-	)
+	@ConfigItem(keyName = "shuffleMode", name = "Shuffle Mode", description = "Shuffle tracks on command", hidden = true)
 	void setShuffleMode(boolean value);
 
-	@ConfigItem(
-			keyName = "playOriginalIfNoRemix",
-			name = "Play original track if no remix",
-			description = "Play the original track if the remix link is broken or does not exist.",
-			position = 4
-	)
-	default boolean playOriginalIfNoRemix()
-	{
+	@ConfigItem(keyName = "playOriginalIfNoRemix", name = "Play original track if no remix", description = "Play the original track if the remix link is broken or does not exist.", position = 4)
+	default boolean playOriginalIfNoRemix() {
 		return true;
 	}
 
-	@ConfigItem(
-			keyName = "playOriginalIfNoRemix",
-			name = "Play original track if no remix",
-			description = "Play the original track if the remix link is broken or does not exist.",
-			hidden = true
-	)
+	@ConfigItem(keyName = "playOriginalIfNoRemix", name = "Play original track if no remix", description = "Play the original track if the remix link is broken or does not exist.", hidden = true)
 	void setPlayOriginalIfNoRemix(boolean value);
 
-	@ConfigItem(
-			keyName = "updateFromRepo",
-			name = "Automatically Update From Repository",
-			description = "On start, automatically pull a running list from the repository.",
-			position = 5
-	)
-	default boolean updateFromRepo()
-	{
+	@ConfigItem(keyName = "updateFromRepo", name = "Automatically Update From Repository", description = "On start, automatically pull a running list from the repository.", position = 5)
+	default boolean updateFromRepo() {
 		return true;
 	}
 
-	@ConfigItem(
-			keyName = "updateFromRepo",
-			name = "",
-			description = "",
-			hidden = true
-	)
+	@ConfigItem(keyName = "updateFromRepo", name = "", description = "", hidden = true)
 	void setUpdateFromRepo(boolean value);
 
-	@ConfigItem(
-			keyName = "showCurrentTrackName",
-			name = "Show the current track name",
-			description = "Displays the current track name without having to open the music tab.",
-			position = 6
-	)
-	default boolean showCurrentTrackName() { return true; }
+	@ConfigItem(keyName = "showCurrentTrackName", name = "Show the current track name", description = "Displays the current track name without having to open the music tab.", position = 6)
+	default boolean showCurrentTrackName() {
+		return true;
+	}
 
-	@ConfigItem(
-			keyName = "showCurrentTrackName",
-			name = "Show the current track name",
-			description = "Displays the current track name without having to open the music tab.",
-			hidden = true
-	)
+	@ConfigItem(keyName = "showCurrentTrackName", name = "Show the current track name", description = "Displays the current track name without having to open the music tab.", hidden = true)
 	void setShowCurrentTrackName(boolean value);
 
-	@Range(
-			max = 100
-	)
-	@ConfigItem(
-			keyName = "remixVolumeOffset",
-			name = "Remix volume offset",
-			description = "Amount to decrease volume of remix to match in-game volume.",
-			position = 7
-	)
-	default int remixVolumeOffset()
-	{
+	@Range(max = 100)
+	@ConfigItem(keyName = "remixVolumeOffset", name = "Remix volume offset", description = "Amount to decrease volume of remix to match in-game volume.", position = 7)
+	default int remixVolumeOffset() {
 		return 45;
 	}
 
-	@ConfigItem(
-			keyName = "remixVolumeOffset",
-			name = "Remix volume offset",
-			description = "",
-			hidden = true
-	)
+	@ConfigItem(keyName = "remixVolumeOffset", name = "Remix volume offset", description = "", hidden = true)
 	void setRemixVolumeOffset(int val);
 
-	@ConfigItem(
-			keyName = "musicVolume",
-			name = "",
-			description = "",
-			hidden = true
-	)
-	default int getMusicVolume()
-	{
+	@ConfigItem(keyName = "musicVolume", name = "", description = "", hidden = true)
+	default int getMusicVolume() {
 		return 0;
 	}
 
-	@ConfigItem(
-			keyName = "musicVolume",
-			name = "",
-			description = "",
-			hidden = true
-	)
+	@ConfigItem(keyName = "musicVolume", name = "", description = "", hidden = true)
 	void setMusicVolume(int vol);
 
-	@ConfigItem(
-			keyName = "soundEffectVolume",
-			name = "",
-			description = "",
-			hidden = true
-	)
-	default int getSoundEffectVolume()
-	{
+	@ConfigItem(keyName = "soundEffectVolume", name = "", description = "", hidden = true)
+	default int getSoundEffectVolume() {
 		return 0;
 	}
 
-	@ConfigItem(
-			keyName = "soundEffectVolume",
-			name = "",
-			description = "",
-			hidden = true
-	)
+	@ConfigItem(keyName = "soundEffectVolume", name = "", description = "", hidden = true)
 	void setSoundEffectVolume(int val);
 
-	@ConfigItem(
-			keyName = "areaSoundEffectVolume",
-			name = "",
-			description = "",
-			hidden = true
-	)
-	default int getAreaSoundEffectVolume()
-	{
+	@ConfigItem(keyName = "areaSoundEffectVolume", name = "", description = "", hidden = true)
+	default int getAreaSoundEffectVolume() {
 		return 0;
 	}
 
-	@ConfigItem(
-			keyName = "areaSoundEffectVolume",
-			name = "",
-			description = "",
-			hidden = true
-	)
+	@ConfigItem(keyName = "areaSoundEffectVolume", name = "", description = "", hidden = true)
 	void setAreaSoundEffectVolume(int vol);
 }

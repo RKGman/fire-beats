@@ -31,17 +31,16 @@ import net.runelite.api.widgets.WidgetID;
 /**
  * Represents a group-child {@link Widget} relationship.
  * <p>
- * For getting a specific widget from the client, see {@link net.runelite.api.Client#getWidget(net.runelite.api.widgets.WidgetInfo)}.
+ * For getting a specific widget from the client, see
+ * {@link net.runelite.api.Client#getWidget(net.runelite.api.widgets.WidgetInfo)}.
  */
-public enum MusicWidgetInfo
-{
+public enum MusicWidgetInfo {
     MUSIC_CURRENT_TRACK(WidgetID.MUSIC_GROUP_ID, 6); // Not currently included with client api
 
     private final int groupId;
     private final int childId;
 
-    MusicWidgetInfo(int groupId, int childId)
-    {
+    MusicWidgetInfo(int groupId, int childId) {
         this.groupId = groupId;
         this.childId = childId;
     }
@@ -51,8 +50,7 @@ public enum MusicWidgetInfo
      *
      * @return the ID
      */
-    public int getId()
-    {
+    public int getId() {
         return groupId << 16 | childId;
     }
 
@@ -61,8 +59,7 @@ public enum MusicWidgetInfo
      *
      * @return the group ID
      */
-    public int getGroupId()
-    {
+    public int getGroupId() {
         return groupId;
     }
 
@@ -71,8 +68,7 @@ public enum MusicWidgetInfo
      *
      * @return the child ID
      */
-    public int getChildId()
-    {
+    public int getChildId() {
         return childId;
     }
 
@@ -81,32 +77,29 @@ public enum MusicWidgetInfo
      *
      * @return the packed ID
      */
-    public int getPackedId()
-    {
+    public int getPackedId() {
         return groupId << 16 | childId;
     }
 
     /**
-     * Utility method that converts an ID returned by {@link #getId()} back
-     * to its group ID.
+     * Utility method that converts an ID returned by {@link #getId()} back to its
+     * group ID.
      *
      * @param id passed group-child ID
      * @return the group ID
      */
-    public static int TO_GROUP(int id)
-    {
+    public static int TO_GROUP(int id) {
         return id >>> 16;
     }
 
     /**
-     * Utility method that converts an ID returned by {@link #getId()} back
-     * to its child ID.
+     * Utility method that converts an ID returned by {@link #getId()} back to its
+     * child ID.
      *
      * @param id passed group-child ID
      * @return the child ID
      */
-    public static int TO_CHILD(int id)
-    {
+    public static int TO_CHILD(int id) {
         return id & 0xFFFF;
     }
 
@@ -117,8 +110,7 @@ public enum MusicWidgetInfo
      * @param childId the child ID
      * @return the packed ID
      */
-    public static int PACK(int groupId, int childId)
-    {
+    public static int PACK(int groupId, int childId) {
         return groupId << 16 | childId;
     }
 

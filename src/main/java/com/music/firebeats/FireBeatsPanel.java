@@ -39,15 +39,10 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 
 @Slf4j
-public
-class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListener
-{
+public class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListener {
     FireBeatsPlugin fireBeatsPlugin;
 
-
-
-    public FireBeatsPanel(FireBeatsPlugin fireBeatsPlugin)
-    {
+    public FireBeatsPanel(FireBeatsPlugin fireBeatsPlugin) {
         super(false);
 
         this.fireBeatsPlugin = fireBeatsPlugin;
@@ -77,8 +72,7 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         JLabel volumeLabel = new JLabel();
         volumeLabel.setText("Volume");
         volumeLabel.setForeground(Color.WHITE);
-        JSlider volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-                fireBeatsPlugin.getMusicConfig().volume());
+        JSlider volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, fireBeatsPlugin.getMusicConfig().volume());
         volumeSlider.setBackground(Color.LIGHT_GRAY);
         volumeSlider.setName("volume");
         volumeSlider.addChangeListener((ChangeListener) this);
@@ -127,11 +121,10 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         loopRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JRadioButton source = (JRadioButton)e.getSource();
+                JRadioButton source = (JRadioButton) e.getSource();
                 fireBeatsPlugin.getMusicConfig().setLoop(source.isSelected());
 
-                if (source.isSelected() == true)
-                {
+                if (source.isSelected() == true) {
                     fireBeatsPlugin.getMusicConfig().setShuffleMode(false);
                 }
             }
@@ -152,11 +145,10 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         shuffleRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JRadioButton source = (JRadioButton)e.getSource();
+                JRadioButton source = (JRadioButton) e.getSource();
                 fireBeatsPlugin.getMusicConfig().setShuffleMode(source.isSelected());
 
-                if (source.isSelected() == true)
-                {
+                if (source.isSelected() == true) {
                     fireBeatsPlugin.getMusicConfig().setLoop(false);
                     // loop.setSelected(false);
                 }
@@ -242,24 +234,17 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         add(volumePanel, BorderLayout.CENTER);
     }
 
-    public void stateChanged(ChangeEvent e)
-    {
-        JSlider source = (JSlider)e.getSource();
+    public void stateChanged(ChangeEvent e) {
+        JSlider source = (JSlider) e.getSource();
         if (!source.getValueIsAdjusting()) {
-            if (source.getName() == "volume")
-            {
+            if (source.getName() == "volume") {
                 // log.info("Volume is " + source.getValue());
-                if (source.getValue() < fireBeatsPlugin.getMusicConfig().remixVolumeOffset())
-                {
+                if (source.getValue() < fireBeatsPlugin.getMusicConfig().remixVolumeOffset()) {
                     fireBeatsPlugin.getMusicConfig().setVolume(fireBeatsPlugin.getMusicConfig().remixVolumeOffset());
-                }
-                else
-                {
+                } else {
                     fireBeatsPlugin.getMusicConfig().setVolume(source.getValue());
                 }
-            }
-            else if (source.getName() == "remixOffset")
-            {
+            } else if (source.getName() == "remixOffset") {
                 // log.info("Remix offset is " + source.getValue());
                 fireBeatsPlugin.getMusicConfig().setRemixVolumeOffset(source.getValue());
             }
@@ -267,26 +252,18 @@ class FireBeatsPanel extends PluginPanel implements ChangeListener, ActionListen
         }
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
-        JCheckBox source = (JCheckBox)e.getSource();
-        if (source.getName() == "mute")
-        {
+    public void actionPerformed(ActionEvent e) {
+        JCheckBox source = (JCheckBox) e.getSource();
+        if (source.getName() == "mute") {
             // log.info("Value of mute is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setMute(source.isSelected());
-        }
-        else if (source.getName() == "showTrackName")
-        {
+        } else if (source.getName() == "showTrackName") {
             // log.info("Value of showTrackName is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setShowCurrentTrackName(source.isSelected());
-        }
-        else if (source.getName() == "playOriginal")
-        {
+        } else if (source.getName() == "playOriginal") {
             // log.info("Value of playOriginal is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setPlayOriginalIfNoRemix(source.isSelected());
-        }
-        else if (source.getName() == "updateFromRepo")
-        {
+        } else if (source.getName() == "updateFromRepo") {
             // log.info("Value of updateFromRepo is " + source.isSelected());
             fireBeatsPlugin.getMusicConfig().setUpdateFromRepo(source.isSelected());
         }
