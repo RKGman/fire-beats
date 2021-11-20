@@ -9,11 +9,11 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.7.3'
+def runeLiteVersion = '1.8.3'
 
 dependencies {
 	implementation files('libs/jaco-mp3-player-0.9.5.jar')
-	compile 'org.jsoup:jsoup:1.13.1'
+	implementation 'org.jsoup:jsoup:1.13.1'
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
 	compileOnly 'org.projectlombok:lombok:1.18.4'
