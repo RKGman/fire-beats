@@ -23,15 +23,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.music.firebeats;
+package com.music.rs3music;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
 
-@ConfigGroup("firebeats")
-public interface FireBeatsConfig extends Config
+@ConfigGroup("RS3Music")
+public interface RS3MusicConfig extends Config
 {
 	@ConfigItem(
 			keyName = "mute",
@@ -73,120 +73,6 @@ public interface FireBeatsConfig extends Config
 			hidden = true
 	)
 	void setVolume(int val);
-
-	@ConfigItem(
-			keyName = "loop",
-			name = "Loop",
-			description = "Loop the remix track",
-			position = 2
-	)
-	default boolean loop()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-			keyName = "loop",
-			name = "Loop",
-			description = "Loop the remix track",
-			hidden = true
-	)
-	void setLoop(boolean value);
-
-	@ConfigItem(
-			keyName = "shuffleMode",
-			name = "Shuffle Mode",
-			description = "Shuffle tracks on command",
-			position = 3
-	)
-	default boolean shuffleMode()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-			keyName = "shuffleMode",
-			name = "Shuffle Mode",
-			description = "Shuffle tracks on command",
-			hidden = true
-	)
-	void setShuffleMode(boolean value);
-
-	@ConfigItem(
-			keyName = "playOriginalIfNoRemix",
-			name = "Play original track if no remix",
-			description = "Play the original track if the remix link is broken or does not exist.",
-			position = 4
-	)
-	default boolean playOriginalIfNoRemix()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-			keyName = "playOriginalIfNoRemix",
-			name = "Play original track if no remix",
-			description = "Play the original track if the remix link is broken or does not exist.",
-			hidden = true
-	)
-	void setPlayOriginalIfNoRemix(boolean value);
-
-	@ConfigItem(
-			keyName = "updateFromRepo",
-			name = "Automatically Update From Repository",
-			description = "On start, automatically pull a running list from the repository.",
-			position = 5
-	)
-	default boolean updateFromRepo()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-			keyName = "updateFromRepo",
-			name = "",
-			description = "",
-			hidden = true
-	)
-	void setUpdateFromRepo(boolean value);
-
-	@ConfigItem(
-			keyName = "showCurrentTrackName",
-			name = "Show the current track name",
-			description = "Displays the current track name without having to open the music tab.",
-			position = 6
-	)
-	default boolean showCurrentTrackName() { return true; }
-
-	@ConfigItem(
-			keyName = "showCurrentTrackName",
-			name = "Show the current track name",
-			description = "Displays the current track name without having to open the music tab.",
-			hidden = true
-	)
-	void setShowCurrentTrackName(boolean value);
-
-	@Range(
-			max = 100
-	)
-	@ConfigItem(
-			keyName = "remixVolumeOffset",
-			name = "Remix volume offset",
-			description = "Amount to decrease volume of remix to match in-game volume.",
-			position = 7
-	)
-	default int remixVolumeOffset()
-	{
-		return 45;
-	}
-
-	@ConfigItem(
-			keyName = "remixVolumeOffset",
-			name = "Remix volume offset",
-			description = "",
-			hidden = true
-	)
-	void setRemixVolumeOffset(int val);
 
 	@ConfigItem(
 			keyName = "musicVolume",

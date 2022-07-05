@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.music.firebeats;
+package com.music.rs3music;
 
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
